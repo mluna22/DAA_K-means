@@ -98,6 +98,7 @@ std::vector<Solution> Grasp::solve(const Problem& points, int k, int lrc_size) {
     // Recorremos todos los puntos y centroides para asignar cada punto al centroide más cercano
     for (int i{0}; i < points.size(); ++i) {  // Recorrer todos los puntos
       int farthest_centroid_index{0};
+      lrc.clear();
       for (int j{0}; j < k; ++j) {  // Metemos en lrc los centroides más cercanos al punto
         insert_lrc(j, lrc, lrc_size, new_solution);
       }
