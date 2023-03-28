@@ -18,15 +18,26 @@
 #include <chrono>
 
 #include "k-means.h"
+#include "grasp.h"
 
-template <class T>
-std::ostream& printResults(std::ostream& os, std::string instance, Problem& problem, T algorithm) {
+std::ostream& printKMeans(std::ostream& os, std::string instance, Problem& problem, KMeans algorithm) {
   auto start = std::chrono::high_resolution_clock::now();
   std::vector<Solution> solutions = algorithm.solve(problem, problem.size()/10 < 2 ? 2 : problem.size()/10);
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed_seconds = end - start;
   for (int i{0}; i < solutions.size(); ++i) {
     os << instance << "," << problem.size() << "," << solutions[i].size() << "," << i + 1 << "," << solutions[i].SSE() << "," << elapsed_seconds.count() << std::endl;
+  }
+  return os;
+}
+
+std::ostream& printGrasp(std::ostream& os, std::string instance, Problem& problem, Grasp algorithm, int lrc_size) {
+  auto start = std::chrono::high_resolution_clock::now();
+  std::vector<Solution> solutions = algorithm.solve(problem, problem.size()/10 < 2 ? 2 : problem.size()/10, lrc_size);
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed_seconds = end - start;
+  for (int i{0}; i < solutions.size(); ++i) {
+    os << instance << "," << problem.size() << "," << solutions[i].size() << "," << lrc_size << "," << i + 1 << "," << solutions[i].SSE() << "," << elapsed_seconds.count() << std::endl;
   }
   return os;
 }
@@ -67,7 +78,16 @@ int main(int argc, char** argv) {
   for (const auto& entry : std::filesystem::directory_iterator(instance_folder)) {
     std::string instance_path = entry.path();
     Problem matrix = loadProblem(instance_path);
-    printResults(std::cout, instance_path, matrix, kmeans);
+    printKMeans(std::cout, instance_path, matrix, kmeans);
+  }
+
+  Grasp grasp;
+  std::cout << "Algoritmo GRASP" << std::endl;
+  std::cout << "Problema,m,k,|LRC|,Ejecución,SSE,CPU(s)" << std::endl;
+  for (const auto& entry : std::filesystem::directory_iterator(instance_folder)) {
+    std::string instance_path = entry.path();
+    Problem matrix = loadProblem(instance_path);
+    printGrasp(std::cout, instance_path, matrix, grasp, 3);
   }
 
   return 0;
