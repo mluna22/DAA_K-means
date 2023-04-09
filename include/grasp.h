@@ -20,7 +20,7 @@
 #include <cmath>
 #include <iostream>
 #include <algorithm>
-#include "utilities.h"
+#include "solution.h"
 
 class Grasp {
  public:
