@@ -55,7 +55,7 @@ std::vector<Solution> KMeans::solve(const Problem& points, int k) {
     int closest_centroid_index{0};
     for (int j{0}; j < k; ++j) {  // Recorrer todos los centroides
       double distance{euclidean_distance(points[i], solution[j])};
-      if (distance < min_distance && distance != 0) {
+      if (distance < min_distance) {
         min_distance = distance;
         closest_centroid_index = j;
       }
@@ -90,7 +90,7 @@ std::vector<Solution> KMeans::solve(const Problem& points, int k) {
       int closest_centroid_index{0};
       for (int j{0}; j < k; ++j) {  // Recorrer todos los centroides
         double distance{euclidean_distance(points[i], solution[j])};
-        if (distance < min_distance && distance != 0) {
+        if (distance < min_distance) {
           min_distance = distance;
           closest_centroid_index = j;
         }

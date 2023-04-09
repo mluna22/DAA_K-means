@@ -44,26 +44,33 @@ class Solution {
   }
 
   /**
-   * @brief Calculates the sum of squared errors of the solution
+   * @brief Calculates the sum of distances of the solution
    */
   const double evaluate(const Problem& problem) {
     double pmedian{0};
-    for (int i{0}; i < problem.size(); ++i) {  // por cada point
-      double min_distance{euclidean_distance(problem[i], points_[0])};
-      for (int j{1}; j < points_.size(); ++j) {  // por cada centroid
+    std::vector<std::pair<double, int>> distances(problem.size(), {0, 0});
+    for (int i{0}; i < problem.size(); ++i) {  // por cada punto
+      double min_distance{INFINITY};
+      for (int j{0}; j < points_.size(); ++j) {  // por cada punto de servicio
         double distance{euclidean_distance(problem[i], points_[j])};
-        if (distance < min_distance && distance > 0) {
+        if (distance < min_distance) {
           min_distance = distance;
+          distances[i] = {distance, j};
         }
       }
       pmedian += min_distance;
     }
+    double result_check{0};
+    for (int i{0}; i < problem.size(); ++i) {
+      result_check += distances[i].first;
+    }
+    
     return pmedian;
   }
 
   const bool operator==(const Solution& other) {
     if (points_.size() != other.points_.size()) return false;
-    for (int i{0}; i < points_.size(); ++i) { // por cada point
+    for (int i{0}; i < points_.size(); ++i) { // por cada punto
       if (points_[i].size() != other.points_[i].size()) return false;
       for (int j{0}; j < points_[i].size(); ++j) { // por cada dimension
         if (fabs(points_[i][j] - other.points_[i][j]) > 0.001) return false;
@@ -88,6 +95,8 @@ class Solution {
     // Intercambio, inserción y eliminación
     Solution best_solution(*this);
     Solution new_solution(*this);
+    std::vector<std::pair<double, int>> distances;
+
     do {
       best_solution = new_solution;
       new_solution = insertion_search(problem);

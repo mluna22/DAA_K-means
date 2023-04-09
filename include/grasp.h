@@ -51,7 +51,7 @@ std::vector<Solution> Grasp::solve(const Problem& points, int k, int lrc_size) {
       for (int i{0}; i < points.size(); ++i) { // Para cada punto
         for (int j{0}; j < solution.size(); ++j) { // Para cada punto de la solución
           double distance{euclidean_distance(points[i], solution[j])};
-          if (distance < distances[i] && distance != 0) {
+          if (distance < distances[i]) {
             distances[i] = distance;
           }
         }
