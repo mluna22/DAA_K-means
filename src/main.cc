@@ -26,7 +26,7 @@ std::ostream& printKMeans(std::ostream& os, std::string instance, Problem& probl
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed_seconds = end - start;
   for (int i{0}; i < solutions.size(); ++i) {
-    os << instance << "," << problem.size() << "," << solutions[i].size() << "," << i + 1 << "," << solutions[i].SSE(problem) << "," << elapsed_seconds.count() << std::endl;
+    os << instance << "," << problem.size() << "," << solutions[i].size() << "," << i + 1 << "," << solutions[i].evaluate(problem) << "," << elapsed_seconds.count() << std::endl;
   }
   return os;
 }
@@ -37,7 +37,7 @@ std::ostream& printGrasp(std::ostream& os, std::string instance, Problem& proble
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed_seconds = end - start;
   for (int i{0}; i < solutions.size(); ++i) {
-    os << instance << "," << problem.size() << "," << solutions[i].size() << "," << lrc_size << "," << i + 1 << "," << solutions[i].SSE(problem) << "," << elapsed_seconds.count() << std::endl;
+    os << instance << "," << problem.size() << "," << solutions[i].size() << "," << lrc_size << "," << i + 1 << "," << solutions[i].evaluate(problem) << "," << elapsed_seconds.count() << std::endl;
   }
   return os;
 }

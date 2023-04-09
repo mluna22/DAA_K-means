@@ -97,19 +97,19 @@ class Solution {
   /**
    * @brief Calculates the sum of squared errors of the solution
    */
-  const double SSE(const Problem& problem) {
-    double sse{0};
+  const double evaluate(const Problem& problem) {
+    double pmedian{0};
     for (int i{0}; i < problem.size(); ++i) {  // for each point
       double min_distance{euclidean_distance(problem[i], points_[0])};
       for (int j{1}; j < points_.size(); ++j) {  // for each centroid
         double distance{euclidean_distance(problem[i], points_[j])};
-        if (distance < min_distance) {
+        if (distance < min_distance && distance > 0) {
           min_distance = distance;
         }
       }
-      sse += min_distance * min_distance;
+      pmedian += min_distance;
     }
-    return sse;
+    return pmedian;
   }
 
   const bool operator==(const Solution& other) {
