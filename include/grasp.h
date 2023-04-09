@@ -25,47 +25,62 @@
 class Grasp {
  public:
   Grasp();
-  // std::vector<Point> createLRC(const Problem& points, const Solution& solution, int lrc_size);
   std::vector<Solution> solve(const Problem& points, int k, int lrc_size);
- private:
-  void heuristic(int index, std::vector<int>& lrc, int lrc_size, Solution& clusters);
 };
 
 Grasp::Grasp() {}
 
-void Grasp::heuristic(int index, std::vector<int>& lrc, int lrc_size, Solution& clusters) {
-  
-}
-
-// std::vector<Point> Grasp::createLRC(const Problem& points, const Solution& solution, int lrc_size) {
-//   // Creamos el LRC
-//   std::vector<Point> lrc;
-
-//   // Calculamos la distancia para cada punto al punto de la solución más cercano
-//   std::vector<double> distances(points.size());
-//   for (int i{0}; i < points.size(); ++i) {  // Para cada punto
-//     double min_distance{euclidean_distance(points[i], solution[0][0])};
-//     for (int j{0}; j < solution.size(); ++j) {  // Para cada cluster
-//       for (int k{0}; k < solution[j].size(); ++k) {  
-//         double distance{euclidean_distance(points[i], solution[j][k])};
-//         if (distance < min_distance && distance != 0) {
-//           min_distance = distance;
-//         }
-//       }
-//     }
-//     distances[i] = min_distance;
-//     std::cout << "Distancia " << i << ": " << distances[i] << std::endl;
-//   }
-// }
-
 std::vector<Solution> Grasp::solve(const Problem& points, int k, int lrc_size) {
-  bool condition{true};
-  while(condition) {
-    // Creamos la solución inicial
+  //Preprocesamiento
+  std::vector<Solution> solutions;
+  int condition{0};
+  while(condition < 200) {
+    // Fase constructiva
+    // Seleccionar un punto aleatorio como solución inicial
     Solution solution(points.dimensions());
-    condition = false;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, points.size() - 1);
+    solution.push_back(points[dis(gen)]);
+    // Mientras no se haya alcanzado el número de puntos de servicio
+    while (solution.size() < k) {
+      std::vector<int> lrc;
+      std::vector<double> distances(points.size());
+      // Buscamos la distancia mínima de cada punto a la solución
+      // Añadimos al LRC los puntos con la distancia mínima más alta
+      for (int i{0}; i < points.size(); ++i) { // Para cada punto
+        for (int j{0}; j < solution.size(); ++j) { // Para cada punto de la solución
+          double distance{euclidean_distance(points[i], solution[j])};
+          if (distance < distances[i] && distance != 0) {
+            distances[i] = distance;
+          }
+        }
+      }
+      // Ordenamos los puntos por distancia
+      std::vector<int> sorted_points(points.size());
+      std::iota(sorted_points.begin(), sorted_points.end(), 0);
+      std::sort(sorted_points.begin(), sorted_points.end(), [&distances](int a, int b) {
+        return distances[a] < distances[b];
+      });
+      // Añadimos los puntos al LRC
+      for (int i{0}; i < lrc_size; ++i) {
+        lrc.push_back(sorted_points[i]);
+      }
+      // Seleccionamos un punto aleatorio del LRC
+      std::uniform_int_distribution<> dis2(0, lrc.size() - 1);
+      solution.push_back(points[lrc[dis2(gen)]]);
+    }
+
+    // Postprocesamiento
+
+    // Actualización de la solución
+    condition++;
+    if (solutions.empty() || solution.evaluate(points) < solutions[solutions.size() - 1].evaluate(points)) {
+      solutions.push_back(solution);
+      condition = 0;
+    }
   }
-  return std::vector<Solution>();
+  return solutions;
 }
 
 
