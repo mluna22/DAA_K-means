@@ -48,9 +48,9 @@ class Solution {
    */
   const double evaluate(const Problem& problem) {
     double pmedian{0};
-    for (int i{0}; i < problem.size(); ++i) {  // for each point
+    for (int i{0}; i < problem.size(); ++i) {  // por cada point
       double min_distance{euclidean_distance(problem[i], points_[0])};
-      for (int j{1}; j < points_.size(); ++j) {  // for each centroid
+      for (int j{1}; j < points_.size(); ++j) {  // por cada centroid
         double distance{euclidean_distance(problem[i], points_[j])};
         if (distance < min_distance && distance > 0) {
           min_distance = distance;
@@ -63,9 +63,9 @@ class Solution {
 
   const bool operator==(const Solution& other) {
     if (points_.size() != other.points_.size()) return false;
-    for (int i{0}; i < points_.size(); ++i) { // for each point
+    for (int i{0}; i < points_.size(); ++i) { // por cada point
       if (points_[i].size() != other.points_[i].size()) return false;
-      for (int j{0}; j < points_[i].size(); ++j) { // for each dimension
+      for (int j{0}; j < points_[i].size(); ++j) { // por cada dimension
         if (fabs(points_[i][j] - other.points_[i][j]) > 0.001) return false;
       }
     }
@@ -83,11 +83,79 @@ class Solution {
   const int dimensions() {
     return dimensions_;
   }
+
+  Solution local_search(const Problem& problem) {
+    // Intercambio, inserción y eliminación
+    Solution best_solution(*this);
+    Solution new_solution(*this);
+    do {
+      best_solution = new_solution;
+      new_solution = insertion_search(problem);
+      if (new_solution.evaluate(problem) < best_solution.evaluate(problem)) {
+        continue;
+      }
+      new_solution = elimination_search(problem);
+      if (new_solution.evaluate(problem) < best_solution.evaluate(problem)) {
+        continue;
+      }
+      new_solution = exchange_search(problem);
+    } while (new_solution.evaluate(problem) < best_solution.evaluate(problem));
+    return best_solution;
+  }
   
  private:
   // Centroids if kmeans, points of service if grasp
   std::vector<Point> points_;
   int dimensions_;
+  Solution insertion_search(const Problem& problem) {
+    Solution best_solution(*this);
+    for (int i{0}; i < points_.size(); ++i) { // por cada punto de la solución
+      for (int j{0}; j < problem.size(); ++j) { // por cada punto
+        Solution new_solution(*this);
+        new_solution.push_back(problem[j]);
+        new_solution[i] = problem[j];
+        if (new_solution.evaluate(problem) < best_solution.evaluate(problem)) {
+          best_solution = new_solution;
+          break;
+        }
+      }
+      if (best_solution.evaluate(problem) < evaluate(problem)) {
+        break;
+      }
+    }
+    return best_solution;
+  }
+
+  Solution elimination_search(const Problem& problem) {
+    Solution best_solution(*this);
+    for (int i{0}; i < points_.size(); ++i) { // por cada centroid
+      Solution new_solution(*this);
+      new_solution.points_.erase(new_solution.points_.begin() + i);
+      if (new_solution.evaluate(problem) < best_solution.evaluate(problem)) {
+        best_solution = new_solution;
+        break;
+      }
+    }
+    return best_solution;
+  }
+
+  Solution exchange_search(const Problem& problem) {
+    Solution best_solution(*this);
+    for (int i{0}; i < points_.size(); ++i) { // por cada punto de la solución
+      for (int j{0}; j < problem.size(); ++j) { // por cada punto
+        Solution new_solution(*this);
+        new_solution[i] = problem[j];
+        if (new_solution.evaluate(problem) < best_solution.evaluate(problem)) {
+          best_solution = new_solution;
+          break;
+        }
+      }
+      if (best_solution.evaluate(problem) < evaluate(problem)) {
+        break;
+      }
+    }
+    return best_solution;
+  }
 };
 
 #endif  // SOLUTION_H

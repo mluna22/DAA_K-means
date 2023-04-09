@@ -72,6 +72,7 @@ std::vector<Solution> Grasp::solve(const Problem& points, int k, int lrc_size) {
     }
 
     // Postprocesamiento
+    solution = solution.local_search(points);
 
     // Actualización de la solución
     condition++;
