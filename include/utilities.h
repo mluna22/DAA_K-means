@@ -20,6 +20,12 @@
 typedef std::vector<double> Point;
 typedef std::vector<Point> Cluster;
 
+/**
+ * @brief Calculates the euclidean distance between two points
+ * @param a First point
+ * @param b Second point
+ * @return Euclidean distance between a and b
+ */
 double euclidean_distance(const Point& a, const Point& b) {
   double distance{0};
   for (int i{0}; i < a.size(); ++i) {
@@ -28,8 +34,16 @@ double euclidean_distance(const Point& a, const Point& b) {
   return sqrt(distance);
 }
 
+/**
+ * @brief Defines the clustering problem (localization problem) 
+*/
 class Problem {
  public:
+  /**
+   * @brief Creates a new problem
+   * @param n Number of points
+   * @param d Number of dimensions
+  */
   Problem(int n, int d) {
     for (int i{0}; i < n; ++i) {
       points_.push_back(Point(d));
@@ -39,6 +53,7 @@ class Problem {
   const Point& operator[](int i) const {
     return points_[i];
   }
+
   Point& operator[](int i) {
     return points_[i];
   }
@@ -54,67 +69,75 @@ class Problem {
   std::vector<Point> points_;
 };
 
+/**
+ * @brief Defines a solution to the clustering problem
+*/
 class Solution {
  public:
-  Solution(int k, int d) {
+  /**
+   * @brief Creates a new solution
+   * @param d Number of dimensions
+  */
+  Solution(int d) {
     dimensions_ = d;
-    for (int i{0}; i < k; ++i) {
-      clusters_.push_back(Cluster());
-    }
-  }
-  std::vector<Point>& operator[](int i) {
-    return clusters_[i];
   }
 
-  const int size() {
-    return clusters_.size();
+  const Point& operator[](int i) const {
+    return points_[i];
   }
 
-  Point centroid(int i) {
-    Point centroid;
-    for (int j{0}; j < dimensions_; ++j) {  // for each dimension
-      double sum{0};
-      for (int k{0}; k < clusters_[i].size(); ++k) {  // for each point in the cluster
-        sum += clusters_[i][k][j];
-      }
-      centroid.push_back(sum / clusters_[i].size());
-    }
-    return centroid;
+  Point& operator[](int i) {
+    return points_[i];
   }
 
-  double SSE() {
+  const int size() const {
+    return points_.size();
+  }
+
+  /**
+   * @brief Calculates the sum of squared errors of the solution
+   */
+  const double SSE(const Problem& problem) {
     double sse{0};
-    for (int i{0}; i < clusters_.size(); ++i) {  // for each cluster
-      Point centroid = this->centroid(i);
-      for (int j{0}; j < clusters_[i].size(); ++j) {
-        double distance = euclidean_distance(clusters_[i][j], centroid);
-        sse += distance * distance;
+    for (int i{0}; i < problem.size(); ++i) {  // for each point
+      double min_distance{euclidean_distance(problem[i], points_[0])};
+      for (int j{1}; j < points_.size(); ++j) {  // for each centroid
+        double distance{euclidean_distance(problem[i], points_[j])};
+        if (distance < min_distance) {
+          min_distance = distance;
+        }
       }
+      sse += min_distance * min_distance;
     }
     return sse;
   }
 
-  bool operator==(const Solution& other) {
-    if (clusters_.size() != other.clusters_.size()) return false;
-    for (int i{0}; i < clusters_.size(); ++i) {
-      if (clusters_[i].size() != other.clusters_[i].size()) return false;
-      for (int j{0}; j < clusters_[i].size(); ++j) {
-        if (clusters_[i][j].size() != other.clusters_[i][j].size()) return false;
-        for (int k{0}; k < clusters_[i][j].size(); ++k) {
-          if (clusters_[i][j][k] != other.clusters_[i][j][k]) {
-            return false;
-          }
-        }
+  const bool operator==(const Solution& other) {
+    if (points_.size() != other.points_.size()) return false;
+    for (int i{0}; i < points_.size(); ++i) { // for each point
+      if (points_[i].size() != other.points_[i].size()) return false;
+      for (int j{0}; j < points_[i].size(); ++j) { // for each dimension
+        if (fabs(points_[i][j] - other.points_[i][j]) > 0.001) return false;
       }
     }
     return true;
   }
 
-  bool operator!=(const Solution& other) {
+  const bool operator!=(const Solution& other) {
     return !(*this == other);
   }
+
+  void push_back(Point point) {
+    points_.push_back(point);
+  }
+
+  const int dimensions() {
+    return dimensions_;
+  }
+  
  private:
-  std::vector<Cluster> clusters_;
+  // Centroids if kmeans, points of service if grasp
+  std::vector<Point> points_;
   int dimensions_;
 };
 
