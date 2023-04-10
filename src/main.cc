@@ -20,24 +20,38 @@
 #include "k-means.h"
 #include "grasp.h"
 
-std::ostream& printKMeans(std::ostream& os, std::string instance, Problem& problem, KMeans algorithm) {
+std::ostream& printKMeans(std::ostream& os, std::string instance, Problem& problem, KMeans algorithm, bool debug = false) {
   auto start = std::chrono::high_resolution_clock::now();
   std::vector<Solution> solutions = algorithm.solve(problem, problem.size()/10 < 2 ? 2 : problem.size()/10);
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed_seconds = end - start;
   for (int i{0}; i < solutions.size(); ++i) {
     os << instance << "," << problem.size() << "," << solutions[i].size() << "," << i + 1 << "," << solutions[i].evaluate(problem) << "," << elapsed_seconds.count() << std::endl;
+    if (debug) {
+      for (int j{0}; j < solutions[i].size(); ++j) {
+        for (int k{0}; k < solutions[i][j].size(); ++k) {
+          os << solutions[i][j][k] << " ";
+        } os << std::endl;
+      }
+    }
   }
   return os;
 }
 
-std::ostream& printGrasp(std::ostream& os, std::string instance, Problem& problem, Grasp algorithm, int lrc_size) {
+std::ostream& printGrasp(std::ostream& os, std::string instance, Problem& problem, Grasp algorithm, int lrc_size, bool debug = false) {
   auto start = std::chrono::high_resolution_clock::now();
   std::vector<Solution> solutions = algorithm.solve(problem, problem.size()/10 < 2 ? 2 : problem.size()/10, lrc_size);
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed_seconds = end - start;
   for (int i{0}; i < solutions.size(); ++i) {
     os << instance << "," << problem.size() << "," << solutions[i].size() << "," << lrc_size << "," << i + 1 << "," << solutions[i].evaluate(problem) << "," << elapsed_seconds.count() << std::endl;
+    if (debug) {
+      for (int j{0}; j < solutions[i].size(); ++j) {
+        for (int k{0}; k < solutions[i][j].size(); ++k) {
+          os << solutions[i][j][k] << " ";
+        } os << std::endl;
+      }
+    }
   }
   return os;
 }
@@ -71,6 +85,7 @@ int main(int argc, char** argv) {
   // } else {
   //   output.open("out.csv");
   // }
+  bool debug = (argc == 3 && std::string(argv[2]) == "1");
   std::string instance_folder = argv[1];
   KMeans kmeans;
   std::cout << "Algoritmo K-Means" << std::endl;
@@ -78,7 +93,7 @@ int main(int argc, char** argv) {
   for (const auto& entry : std::filesystem::directory_iterator(instance_folder)) {
     std::string instance_path = entry.path();
     Problem matrix = loadProblem(instance_path);
-    printKMeans(std::cout, instance_path, matrix, kmeans);
+    printKMeans(std::cout, instance_path, matrix, kmeans, debug);
   }
 
   Grasp grasp;
@@ -87,7 +102,7 @@ int main(int argc, char** argv) {
   for (const auto& entry : std::filesystem::directory_iterator(instance_folder)) {
     std::string instance_path = entry.path();
     Problem matrix = loadProblem(instance_path);
-    printGrasp(std::cout, instance_path, matrix, grasp, 3);
+    printGrasp(std::cout, instance_path, matrix, grasp, 3, debug);
   }
 
   return 0;
