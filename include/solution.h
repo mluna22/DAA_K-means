@@ -119,7 +119,7 @@ class Solution {
     do {
       best_solution = new_solution;
       best_solution_value = new_solution_value;
-      
+
       new_solution = best_solution.exchange_search(problem);
       new_solution_value = new_solution.evaluate(problem);
       if (new_solution_value < best_solution_value) {
@@ -143,7 +143,7 @@ class Solution {
   Solution insertion_search(const Problem& problem) {
     Solution best_solution(*this);
     double best_solution_value{evaluate(problem)};
-    float penalty{0.5};
+    float penalty{0.2};  // 20% de penalización
     for (int j{0}; j < problem.size(); ++j) { // por cada punto
       Solution new_solution(*this);
       new_solution.push_back(problem[j]);
@@ -158,7 +158,7 @@ class Solution {
   Solution elimination_search(const Problem& problem) {
     Solution best_solution(*this);
     double best_solution_value{evaluate(problem)};
-    float boost{0.05};
+    float boost{0.05};  // 5% de aumento
     for (int i{0}; i < points_.size(); ++i) { // por cada punto de la solución
       Solution new_solution(*this);
       new_solution.points_.erase(new_solution.points_.begin() + i);
