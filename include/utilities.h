@@ -19,6 +19,7 @@
 
 typedef std::vector<double> Point;
 typedef std::vector<Point> Cluster;
+typedef std::vector<std::pair<double, int>> DistanceIndex;
 
 /**
  * @brief Calculates the euclidean distance between two points
@@ -32,6 +33,17 @@ double euclidean_distance(const Point& a, const Point& b) {
     distance += (a[i] - b[i]) * (a[i] - b[i]);
   }
   return sqrt(distance);
+}
+
+/**
+ * @brief Calculates the sum of distances of the solution
+ */
+const double sum_distances(const DistanceIndex& distances) {
+  double sum_of_distances{0};
+  for (int i{0}; i < distances.size(); ++i) {
+    sum_of_distances += distances[i].first;
+  }
+  return sum_of_distances;
 }
 
 #endif  // UTILITIES_H
