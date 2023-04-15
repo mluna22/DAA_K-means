@@ -58,7 +58,7 @@ class Solution {
       }
       sum_of_distances += min_distance;
     }
-    return sum_of_distances;
+    return sum_of_distances + points_.size() * penalty_factor_;
   }
 
   /**
@@ -83,7 +83,7 @@ class Solution {
       result_check += distances[i].first;
     }
     
-    return sum_of_distances;
+    return sum_of_distances  + points_.size() * penalty_factor_;
   }
 
   const bool operator==(const Solution& other) {
@@ -144,6 +144,7 @@ class Solution {
   // Centroids if kmeans, points of service if grasp
   std::vector<Point> points_;
   int dimensions_;
+  int penalty_factor_ = 13; // 13
 
   const double evaluate_insertion(const Problem& points, DistanceIndex& distances, int new_index_from_points) {
     double sum_of_distances{0};
@@ -154,7 +155,7 @@ class Solution {
       }
       sum_of_distances += distances[i].first;
     }
-    return sum_of_distances;
+    return sum_of_distances + (points_.size() + 1) * penalty_factor_;
   }
 
   const double evaluate_elimination(const Problem& points, DistanceIndex& distances, int old_index_from_solution) {
@@ -174,7 +175,7 @@ class Solution {
       }
       sum_of_distances += distances[i].first;
     }
-    return sum_of_distances;
+    return sum_of_distances + (points_.size() - 1) * penalty_factor_;
   }
 
   const double evaluate_exchange(const Problem& points, DistanceIndex& distances, int old_index_from_solution, int new_index_from_points) {
@@ -198,13 +199,13 @@ class Solution {
       }
       sum_of_distances += distances[i].first;
     }
-    return sum_of_distances;
+    return sum_of_distances + points_.size() * penalty_factor_;
   }
 
   Solution insertion_search(const Problem& problem, DistanceIndex& distances) {
     Solution best_solution(*this);
-    double best_solution_value{sum_distances(distances)};
-    float penalty{0.2};  // 20% de penalización
+    double best_solution_value{sum_distances(distances) + points_.size() * penalty_factor_};
+    float penalty{0};  // 20% de penalización
     for (int j{0}; j < problem.size(); ++j) { // por cada punto
       Solution new_solution(*this);
       DistanceIndex new_distances = distances;
@@ -220,8 +221,8 @@ class Solution {
 
   Solution elimination_search(const Problem& problem, DistanceIndex& distances) {
     Solution best_solution(*this);
-    double best_solution_value{sum_distances(distances)};
-    float boost{0.05};  // 5% de aumento
+    double best_solution_value{sum_distances(distances) + points_.size() * penalty_factor_};
+    float boost{0};  // 5% de aumento
     for (int i{0}; i < points_.size(); ++i) { // por cada punto de la solución
       Solution new_solution(*this);
       DistanceIndex new_distances = distances;
@@ -237,7 +238,7 @@ class Solution {
 
   Solution exchange_search(const Problem& problem, DistanceIndex& distances) {
     Solution best_solution(*this);
-    double best_solution_value{sum_distances(distances)};
+    double best_solution_value{sum_distances(distances) + points_.size() * penalty_factor_};
     for (int i{0}; i < points_.size(); ++i) { // por cada punto de la solución
       for (int j{0}; j < problem.size(); ++j) { // por cada punto
         Solution new_solution(*this);
