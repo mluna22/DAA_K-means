@@ -123,7 +123,7 @@ class Solution {
       best_solution_value = new_solution_value;
       best_solution_distances = new_solution_distances;
 
-      new_solution = best_solution.exchange_search(problem, new_solution_distances);
+      new_solution = best_solution.swap_search(problem, new_solution_distances);
       new_solution_value = new_solution.evaluate(problem, new_solution_distances);
       if (new_solution_value < best_solution_value) {
         continue;
@@ -139,7 +139,29 @@ class Solution {
     distances = best_solution_distances;
     return best_solution;
   }
-  
+
+  // Solution rvnd(const Problem& problem) {
+  //   // Intercambio, inserción y eliminación
+  //   DistanceIndex distances;
+  //   Solution best_solution(*this);
+  //   Solution new_solution(*this);
+  //   double best_solution_value{evaluate(problem, distances)};
+  //   double new_solution_value{best_solution_value};
+  //   DistanceIndex best_solution_distances{distances};
+  //   DistanceIndex new_solution_distances{distances};
+  //   // numero aleatorio del 1 al 3
+  //   int random_number{rand() % 3 + 1};
+  // }
+
+  bool isInSolution(const Point& point) {
+    for (int i{0}; i < points_.size(); ++i) {
+      if (points_[i] == point) {
+        return true;
+      }
+    }
+    return false;
+  }
+
  private:
   // Centroids if kmeans, points of service if grasp
   std::vector<Point> points_;
@@ -178,7 +200,7 @@ class Solution {
     return sum_of_distances + (points_.size() - 1) * penalty_factor_;
   }
 
-  const double evaluate_exchange(const Problem& points, DistanceIndex& distances, int old_index_from_solution, int new_index_from_points) {
+  const double evaluate_swap(const Problem& points, DistanceIndex& distances, int old_index_from_solution, int new_index_from_points) {
     double sum_of_distances{0};
     for (int i{0}; i < points.size(); ++i) {
       if (distances[i].second == old_index_from_solution) {
@@ -236,14 +258,14 @@ class Solution {
     return best_solution;
   }
 
-  Solution exchange_search(const Problem& problem, DistanceIndex& distances) {
+  Solution swap_search(const Problem& problem, DistanceIndex& distances) {
     Solution best_solution(*this);
     double best_solution_value{sum_distances(distances) + points_.size() * penalty_factor_};
     for (int i{0}; i < points_.size(); ++i) { // por cada punto de la solución
       for (int j{0}; j < problem.size(); ++j) { // por cada punto
         Solution new_solution(*this);
         DistanceIndex new_distances = distances;
-        double new_solution_value = new_solution.evaluate_exchange(problem, new_distances, i, j);
+        double new_solution_value = new_solution.evaluate_swap(problem, new_distances, i, j);
         if (new_solution_value < best_solution_value) {
           new_solution[i] = problem[j];
           best_solution = new_solution;
