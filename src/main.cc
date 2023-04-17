@@ -21,17 +21,19 @@
 #include "grasp.h"
 #include "gvns.h"
 
+#define N_INSTANCES 5
+
 std::ostream& printKMeans(std::ostream& os, std::string instance, Problem& problem, KMeans algorithm, bool debug = false) {
-  auto start = std::chrono::high_resolution_clock::now();
-  std::vector<Solution> solutions = algorithm.solve(problem, problem.size()/10 < 2 ? 2 : problem.size()/10);
-  auto end = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> elapsed_seconds = end - start;
-  for (int i{0}; i < solutions.size(); ++i) {
-    os << instance << "," << problem.size() << "," << solutions[i].size() << "," << i + 1 << "," << solutions[i].evaluate(problem) << "," << elapsed_seconds.count() << std::endl;
+  for (int i{0}; i < N_INSTANCES; ++i) {
+    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<Solution> solutions = algorithm.solve(problem, problem.size()/10 < 2 ? 2 : problem.size()/10);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    os << instance << "," << problem.size() << "," << solutions[solutions.size() - 1].size() << "," << i + 1 << "," << solutions[solutions.size() - 1].evaluate(problem) << "," << elapsed_seconds.count() << std::endl;
     if (debug) {
-      for (int j{0}; j < solutions[i].size(); ++j) {
-        for (int k{0}; k < solutions[i][j].size(); ++k) {
-          os << solutions[i][j][k] << " ";
+      for (int j{0}; j < solutions[solutions.size() - 1].size(); ++j) {
+        for (int k{0}; k < solutions[solutions.size() - 1][j].size(); ++k) {
+          os << solutions[solutions.size() - 1][j][k] << " ";
         } os << std::endl;
       }
     }
@@ -40,16 +42,16 @@ std::ostream& printKMeans(std::ostream& os, std::string instance, Problem& probl
 }
 
 std::ostream& printGrasp(std::ostream& os, std::string instance, Problem& problem, Grasp algorithm, int lrc_size, bool debug = false) {
-  auto start = std::chrono::high_resolution_clock::now();
-  std::vector<Solution> solutions = algorithm.solve(problem, problem.size()/10 < 2 ? 2 : problem.size()/10, lrc_size);
-  auto end = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> elapsed_seconds = end - start;
-  for (int i{0}; i < solutions.size(); ++i) {
-    os << instance << "," << problem.size() << "," << solutions[i].size() << "," << lrc_size << "," << i + 1 << "," << solutions[i].evaluate(problem) << "," << elapsed_seconds.count() << std::endl;
+  for (int i{0}; i < N_INSTANCES; ++i) {
+    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<Solution> solutions = algorithm.solve(problem, problem.size()/10 < 2 ? 2 : problem.size()/10, lrc_size);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    os << instance << "," << problem.size() << "," << solutions[solutions.size() - 1].size() << "," << lrc_size << "," << i + 1 << "," << solutions[solutions.size() - 1].evaluate(problem) << "," << elapsed_seconds.count() << std::endl;
     if (debug) {
-      for (int j{0}; j < solutions[i].size(); ++j) {
-        for (int k{0}; k < solutions[i][j].size(); ++k) {
-          os << solutions[i][j][k] << " ";
+      for (int j{0}; j < solutions[solutions.size() - 1].size(); ++j) {
+        for (int k{0}; k < solutions[solutions.size() - 1][j].size(); ++k) {
+          os << solutions[solutions.size() - 1][j][k] << " ";
         } os << std::endl;
       }
     }
@@ -62,12 +64,12 @@ std::ostream& printGVNS(std::ostream& os, std::string instance, Problem& problem
   std::vector<Solution> solutions = algorithm.solve(problem, problem.size()/10 < 2 ? 2 : problem.size()/10, rvnd);
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed_seconds = end - start;
-  for (int i{0}; i < solutions.size(); ++i) {
-    os << instance << "," << problem.size() << "," << solutions[i].size() << "," << solutions[i].size() << "," << i + 1 << "," << solutions[i].evaluate(problem) << "," << elapsed_seconds.count() << std::endl;
+  for (int i{0}; i < N_INSTANCES; ++i) {
+    os << instance << "," << problem.size() << "," << solutions[solutions.size() - 1].size() << "," << solutions[solutions.size() - 1].size() << "," << i + 1 << "," << solutions[solutions.size() - 1].evaluate(problem) << "," << elapsed_seconds.count() << std::endl;
     if (debug) {
-      for (int j{0}; j < solutions[i].size(); ++j) {
-        for (int k{0}; k < solutions[i][j].size(); ++k) {
-          os << solutions[i][j][k] << " ";
+      for (int j{0}; j < solutions[solutions.size() - 1].size(); ++j) {
+        for (int k{0}; k < solutions[solutions.size() - 1][j].size(); ++k) {
+          os << solutions[solutions.size() - 1][j][k] << " ";
         } os << std::endl;
       }
     }
