@@ -108,23 +108,23 @@ int main(int argc, char** argv) {
   // }
   bool debug = (argc == 3 && std::string(argv[2]) == "1");
   std::string instance_folder = argv[1];
-  KMeans kmeans;
-  std::cout << "Algoritmo K-Means" << std::endl;
-  std::cout << "Problema,m,k,Ejecución,SSE,CPU(s)" << std::endl;
-  for (const auto& entry : std::filesystem::directory_iterator(instance_folder)) {
-    std::string instance_path = entry.path();
-    Problem matrix = loadProblem(instance_path);
-    printKMeans(std::cout, instance_path, matrix, kmeans, debug);
-  }
+  // KMeans kmeans;
+  // std::cout << "Algoritmo K-Means" << std::endl;
+  // std::cout << "Problema,m,k,Ejecución,SSE,CPU(s)" << std::endl;
+  // for (const auto& entry : std::filesystem::directory_iterator(instance_folder)) {
+  //   std::string instance_path = entry.path();
+  //   Problem matrix = loadProblem(instance_path);
+  //   printKMeans(std::cout, instance_path, matrix, kmeans, debug);
+  // }
 
-  Grasp grasp;
-  std::cout << "Algoritmo GRASP" << std::endl;
-  std::cout << "Problema,m,k,|LRC|,Ejecución,SSE,CPU(s)" << std::endl;
-  for (const auto& entry : std::filesystem::directory_iterator(instance_folder)) {
-    std::string instance_path = entry.path();
-    Problem matrix = loadProblem(instance_path);
-    printGrasp(std::cout, instance_path, matrix, grasp, 3, debug);
-  }
+  // Grasp grasp;
+  // std::cout << "Algoritmo GRASP" << std::endl;
+  // std::cout << "Problema,m,k,|LRC|,Ejecución,SSE,CPU(s)" << std::endl;
+  // for (const auto& entry : std::filesystem::directory_iterator(instance_folder)) {
+  //   std::string instance_path = entry.path();
+  //   Problem matrix = loadProblem(instance_path);
+  //   printGrasp(std::cout, instance_path, matrix, grasp, 3, debug);
+  // }
 
   GVNS gvns;
   std::cout << "Algoritmo GVNS" << std::endl;

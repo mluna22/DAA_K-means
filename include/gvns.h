@@ -101,11 +101,17 @@ std::vector<Solution> GVNS::solve(const Problem& points, int k, bool rvnd) {
         new_solution[selected_points[i]] = points[new_problem_points[i]];
       }
 
-      if (rvnd) {
-        // new_solution = new_solution.rvnd(points);
-      } else {
-        new_solution = new_solution.local_search(points);
-      }
+      // ##### MODIFICACIÓN #####
+
+      // if (rvnd) {
+      //   // new_solution = new_solution.rvnd(points);
+      // } else {
+      //   new_solution = new_solution.local_search(points);
+      // }
+      
+      new_solution = new_solution.manual_search(points);
+
+
       // Movimiento
       if (new_solution.evaluate(points) < solution.evaluate(points)) {
         solution = new_solution;

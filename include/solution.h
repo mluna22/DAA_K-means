@@ -140,6 +140,42 @@ class Solution {
     return best_solution;
   }
 
+// ##### MODIFICACIÓN #####
+
+Solution manual_search(const Problem& problem) {
+  // Intercambio, inserción y eliminación
+    DistanceIndex distances;
+    Solution best_solution(*this);
+    Solution new_solution(*this);
+    double best_solution_value{evaluate(problem, distances)};
+    double new_solution_value{best_solution_value};
+    DistanceIndex best_solution_distances{distances};
+    DistanceIndex new_solution_distances{distances};
+    do {
+      best_solution = new_solution;
+      best_solution_value = new_solution_value;
+      best_solution_distances = new_solution_distances;
+      new_solution = best_solution.swap_search(problem, new_solution_distances);
+      new_solution_value = new_solution.evaluate(problem);
+    } while (new_solution_value < best_solution_value);
+    do {
+      best_solution = new_solution;
+      best_solution_value = new_solution_value;
+      best_solution_distances = new_solution_distances;
+      new_solution = best_solution.insertion_search(problem, new_solution_distances);
+      new_solution_value = new_solution.evaluate(problem);
+    } while (new_solution_value < best_solution_value);
+    do {
+      best_solution = new_solution;
+      best_solution_value = new_solution_value;
+      best_solution_distances = new_solution_distances;
+      new_solution = best_solution.elimination_search(problem, new_solution_distances);
+      new_solution_value = new_solution.evaluate(problem);
+    } while (new_solution_value < best_solution_value);
+    distances = best_solution_distances;
+    return best_solution;
+}
+
   // Solution rvnd(const Problem& problem) {
   //   // Intercambio, inserción y eliminación
   //   DistanceIndex distances;
@@ -166,7 +202,7 @@ class Solution {
   // Centroids if kmeans, points of service if grasp
   std::vector<Point> points_;
   int dimensions_;
-  int penalty_factor_ = 13; // 13
+  int penalty_factor_ = 20; // 13
 
   const double evaluate_insertion(const Problem& points, DistanceIndex& distances, int new_index_from_points) {
     double sum_of_distances{0};
